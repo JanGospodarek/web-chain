@@ -1,3 +1,3 @@
-pub mod page_visits;
+pub mod loans;
 
-pub use page_visits::*;
+pub use loans::*;

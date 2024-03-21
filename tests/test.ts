@@ -9,50 +9,41 @@ describe("PDAs", () => {
   const program = anchor.workspace
     .AnchorProgramExample as anchor.Program<AnchorProgramExample>;
 
-  // PDA for the page visits account
-  const [pageVisitPDA] = PublicKey.findProgramAddressSync(
-    [Buffer.from("page_visits"), payer.publicKey.toBuffer()],
+  const [loanPda] = PublicKey.findProgramAddressSync(
+    [Buffer.from("seed_one"), payer.publicKey.toBuffer()],
     program.programId
   );
 
-  it("Create the page visits tracking PDA", async () => {
+  it("Create loan pda", async () => {
     await program.methods
-      .createPageVisits(
-        5,
+      .createNftLoan(
         0,
         new anchor.BN(5.14),
-        new anchor.BN(0.15),
-        new anchor.BN(10)
+        new anchor.BN(15),
+        new anchor.BN(10),
+        "seed_one"
       )
       .accounts({
         payer: payer.publicKey,
-        pageVisits: pageVisitPDA,
+        loan: loanPda,
       })
       .rpc();
   });
 
-  it("Visit the page!", async () => {
-    await program.methods
-      .incrementPageVisits()
-      .accounts({
-        user: payer.publicKey,
-        pageVisits: pageVisitPDA,
-      })
-      .rpc();
-  });
-
-  it("Visit the page!", async () => {
-    await program.methods
-      .incrementPageVisits()
-      .accounts({
-        user: payer.publicKey,
-        pageVisits: pageVisitPDA,
-      })
-      .rpc();
-  });
-
-  it("View page visits", async () => {
-    const pageVisits = await program.account.pageVisits.fetch(pageVisitPDA);
-    console.log(`Number of page visits: ${pageVisits.interest.toNumber()}`);
+  it("View pda data", async () => {
+    const pageVisits = await program.account.nftLoan.fetch(loanPda);
+    console.log(`Period:${pageVisits.period.toNumber()}`);
+    console.log(`Interest:${pageVisits.interest.toNumber()}`);
+    console.log(`Amount:${pageVisits.reqAmount.toNumber()}`);
+    console.log(`NFT:${pageVisits.nftId}`);
   });
 });
+// it("Visit the page!", async () => {
+//   await program.methods
+//     .incrementPageVisits()
+//     .accounts({
+//       user: payer.publicKey,
+//       loan: pageVisitPDA,
+//     })
+//     .rpc();
+// });

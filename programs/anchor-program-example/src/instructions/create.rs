@@ -1,34 +1,36 @@
-use crate::state::PageVisits;
+use crate::state::NFTLoan;
 use anchor_lang::prelude::*;
 
+
+pub fn create_nft_loan(ctx: Context<CreateLoan>,nftId:u32,req_amount:u64,interest:u64,period:u64,seed_prefix:String) -> Result<()> {
+    *ctx.accounts.loan =NFTLoan {
+        nftId: nftId,
+        req_amount:req_amount,
+        interest:interest,
+        period:period,
+        bump: ctx.bumps.loan,
+    };
+
+    Ok(())
+}
+
 #[derive(Accounts)]
-pub struct CreatePageVisits<'info> {
+#[instruction(seed_prefix:String)]
+
+pub struct CreateLoan<'info> {
     #[account(mut)]
     payer: Signer<'info>,
 
     #[account(
         init,
-        space = 8 + PageVisits::INIT_SPACE,
+        space = 8 +NFTLoan::INIT_SPACE,
         payer = payer,
         seeds = [
-            PageVisits::SEED_PREFIX,
+           seed_prefix.as_ref(),
             payer.key().as_ref(),
         ],
         bump,
     )]
-    page_visits: Account<'info, PageVisits>,
+    loan: Account<'info,NFTLoan>,
     system_program: Program<'info, System>,
-}
-
-pub fn create_page_visits(ctx: Context<CreatePageVisits>,amount:u32,nftId:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {
-    *ctx.accounts.page_visits = PageVisits {
-        page_visits: amount,
-        nftId: nftId,
-        req_amount:req_amount,
-        interest:interest,
-        period:period,
-        bump: ctx.bumps.page_visits,
-    };
-
-    Ok(())
 }

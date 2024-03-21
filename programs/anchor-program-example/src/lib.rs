@@ -13,11 +13,11 @@ declare_id!("3WAygPLbRDLygztwB87McLbsUhGgJuvey17k9QHrAwHE");
 pub mod anchor_program_example {
     use super::*;
 
-    pub fn create_page_visits(ctx: Context<CreatePageVisits>,amount:u32,nftId:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {
-        create::create_page_visits(ctx,amount,nftId,req_amount,interest,period)
+    pub fn create_nft_loan(ctx: Context<CreateLoan>,nftId:u32,req_amount:u64,interest:u64,period:u64,seed_prefix:String) -> Result<()> {
+        create::create_nft_loan(ctx,nftId,req_amount,interest,period,seed_prefix)
     }
 
-    pub fn increment_page_visits(ctx: Context<IncrementPageVisits>) -> Result<()> {
-        increment::increment_page_visits(ctx)
-    }
+    // pub fn increment_page_visits(ctx: Context<IncrementPageVisits>) -> Result<()> {
+    //     increment::increment_page_visits(ctx)
+    // }
 }
