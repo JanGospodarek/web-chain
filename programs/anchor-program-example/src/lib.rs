@@ -14,7 +14,6 @@ pub mod anchor_program_example {
     use super::*;
 
     pub fn init(ctx: Context<Initialize>) -> Result<()> {
-        println!("Init");
         initialize::init(ctx)
     }
     pub fn create_nft_loan(ctx: Context<CreateLoan>,nft_id:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {

@@ -3,6 +3,7 @@ import { AnchorProgramExample } from "../target/types/anchor_program_example";
 import { PublicKey } from "@solana/web3.js";
 import { expect } from "chai";
 
+const AMOUNT_MULTIPLIER = 1000000;
 describe("PDAs", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
@@ -29,36 +30,23 @@ describe("PDAs", () => {
     expect(loan.loanCount).to.equal(0);
   });
 
-  // it("Create loan pda", async () => {
-  //   await program.methods
-  //     .createNftLoan(
-  //       0,
-  //       new anchor.BN(5.14),
-  //       new anchor.BN(15),
-  //       new anchor.BN(10)
-  //     )
-  //     .accounts({
-  //       payer: payer.publicKey,
-  //       loan: loanPda,
-  //     })
-  //     .rpc();
-  // });
-
-  it("View pda data", async () => {
-    const pageVisits = ;
-    console.log(pageVisits.loanCount);
-    // console.log(`Period:${pageVisits[0].period.toNumber()}`);
-    // console.log(`Interest:${pageVisits[0].interest.toNumber()}`);
-    // console.log(`Amount:${pageVisits[0].reqAmount.toNumber()}`);
-    // console.log(`NFT:${pageVisits[0].nftId}`);
+  it("Create loan pda", async () => {
+    await program.methods
+      .createNftLoan(
+        0,
+        new anchor.BN(5.14 * AMOUNT_MULTIPLIER),
+        new anchor.BN(15),
+        new anchor.BN(10)
+      )
+      .accounts({
+        payer: payer.publicKey,
+        loan: loanPda,
+      })
+      .rpc();
+    const loan = await fetchLoan();
+    expect(loan.loanCount).to.equal(1);
+    expect(loan.loans[0].reqAmount.toNumber()).to.equal(
+      5.14 * AMOUNT_MULTIPLIER
+    );
   });
 });
-// it("Visit the page!", async () => {
-//   await program.methods
-//     .incrementPageVisits()
-//     .accounts({
-//       user: payer.publicKey,
-//       loan: pageVisitPDA,
-//     })
-//     .rpc();
-// });

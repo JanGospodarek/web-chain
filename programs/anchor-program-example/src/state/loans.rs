@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
-// use borsh::{BorshDeserialize, BorshSerialize};
-// use anchor_lang::{AnchorSerialize,AnchorDeserialize};anchor
+
 #[derive(AnchorSerialize, AnchorDeserialize, Clone,Copy,InitSpace)]
 pub struct Loan {
     pub nft_id: u32,
@@ -16,4 +15,15 @@ pub struct LoanPDA {
     pub loans: [Option<Loan>; 15],
     pub loan_count: u8,
 
+}
+
+impl LoanPDA{
+    pub fn add_loan(&mut self,loan:Loan){
+        let loan_count = self.loan_count;
+        if loan_count<15 {
+            self.loans[loan_count as usize]=Some(loan);
+            self.loan_count+=1;
+        }
+
+    }
 }
