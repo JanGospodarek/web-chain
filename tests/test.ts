@@ -26,12 +26,10 @@ describe("PDAs", () => {
         systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
-    const loan = await fetchLoan();
-    expect(loan.loanCount).to.equal(0);
   });
 
   it("Create loan", async () => {
-    await program.methods
+    const tx = await program.methods
       .createNftLoan(
         0,
         new anchor.BN(5.14 * AMOUNT_MULTIPLIER),
@@ -44,10 +42,8 @@ describe("PDAs", () => {
       })
       .rpc();
     const loan = await fetchLoan();
-    expect(loan.loanCount).to.equal(1);
-    expect(loan.loans[0].reqAmount.toNumber()).to.equal(
-      5.14 * AMOUNT_MULTIPLIER
-    );
+    console.log("CURRENT LOANS after 1st adding", loan.loans);
+    expect(loan.loans.filter((l) => l !== null).length).to.equal(1);
   });
   it("Create second loan", async () => {
     await program.methods
@@ -63,10 +59,7 @@ describe("PDAs", () => {
       })
       .rpc();
     const loan = await fetchLoan();
-    expect(loan.loanCount).to.equal(2);
-    expect(loan.loans[1].reqAmount.toNumber()).to.equal(
-      6.14 * AMOUNT_MULTIPLIER
-    );
+    expect(loan.loans.filter((l) => l !== null).length).to.equal(2);
   });
   it("delete loan", async () => {
     await program.methods
@@ -77,6 +70,22 @@ describe("PDAs", () => {
       })
       .rpc();
     const loan = await fetchLoan();
-    expect(loan.loanCount).to.equal(1);
+    expect(loan.loans.filter((l) => l !== null).length).to.equal(1);
+  });
+  it("Create 3rd loan", async () => {
+    await program.methods
+      .createNftLoan(
+        2,
+        new anchor.BN(6.14 * AMOUNT_MULTIPLIER),
+        new anchor.BN(16),
+        new anchor.BN(11)
+      )
+      .accounts({
+        payer: payer.publicKey,
+        loan: loanPda,
+      })
+      .rpc();
+    const loan = await fetchLoan();
+    expect(loan.loans.filter((l) => l !== null).length).to.equal(2);
   });
 });

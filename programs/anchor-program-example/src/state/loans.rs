@@ -1,5 +1,12 @@
 use anchor_lang::prelude::*;
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone,Copy,InitSpace,PartialEq)]
+pub enum LoanState {
+    Acitve,
+    Pending,
+    Closed,
+}
+
 #[derive(AnchorSerialize, AnchorDeserialize, Clone,Copy,InitSpace)]
 pub struct Loan {
     pub nft_id: u32,
@@ -9,7 +16,8 @@ pub struct Loan {
     pub paid_amount: u64,
     pub lender: Pubkey,
     pub borrower: Pubkey,
-}
+    pub state: LoanState,
+}   
 
 #[account]
 #[derive(InitSpace)] 
@@ -21,17 +29,23 @@ pub struct LoanPDA {
 }
 
 impl LoanPDA{
-    pub fn add_loan(&mut self,loan:Loan){
+    pub fn add_loan(&mut self,loan:Loan)->&str{
         if let Some(index) = self.loans.iter().position(|&x| x.is_none()) {
             self.loans[index] = Some(loan);
-            self.loan_count += 1;
+            return "success";
+        }else{
+            return "no-space"
         }
+
+        
 
     }
     pub fn destroy_loan(&mut self,nft_id:u32){
         if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().nft_id == nft_id) {
+            if self.loans[index].unwrap().state != LoanState::Pending {
+                return;
+            }
             self.loans[index] = None;
-            self.loan_count -= 1;
         }
     }
 }
