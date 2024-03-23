@@ -1,36 +1,21 @@
-use crate::state::NFTLoan;
+use crate::state::LoanPDA;
+use crate::state::Loan;
 use anchor_lang::prelude::*;
 
 
-pub fn create_nft_loan(ctx: Context<CreateLoan>,nftId:u32,req_amount:u64,interest:u64,period:u64,seed_prefix:String) -> Result<()> {
-    *ctx.accounts.loan =NFTLoan {
-        nftId: nftId,
-        req_amount:req_amount,
-        interest:interest,
-        period:period,
-        bump: ctx.bumps.loan,
-    };
 
+pub fn create_loan(ctx: Context<CreateLoan>,nft_id:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {
     Ok(())
+
 }
 
-#[derive(Accounts)]
-#[instruction(seed_prefix:String)]
 
+#[derive(Accounts)]
 pub struct CreateLoan<'info> {
-    #[account(mut)]
+   #[account(mut)]
     payer: Signer<'info>,
 
-    #[account(
-        init,
-        space = 8 +NFTLoan::INIT_SPACE,
-        payer = payer,
-        seeds = [
-           seed_prefix.as_ref(),
-            payer.key().as_ref(),
-        ],
-        bump,
-    )]
-    loan: Account<'info,NFTLoan>,
+    #[account(mut,seeds = [b"loan_seed",payer.key().as_ref()],bump)]
+    loan: Account<'info,LoanPDA>,
     system_program: Program<'info, System>,
 }

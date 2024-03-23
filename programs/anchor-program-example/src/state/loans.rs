@@ -1,20 +1,19 @@
 use anchor_lang::prelude::*;
-
-#[account]
-#[derive(InitSpace)] // automatically calculate the space required for the struct
-pub struct NFTLoan {
-    pub nftId: u32,
-    pub req_amount:u64,
-    pub interest:u64,
-    pub period:u64,
-    pub bump: u8,
-
+// use borsh::{BorshDeserialize, BorshSerialize};
+// use anchor_lang::{AnchorSerialize,AnchorDeserialize};anchor
+#[derive(AnchorSerialize, AnchorDeserialize, Clone,Copy,InitSpace)]
+pub struct Loan {
+    pub nft_id: u32,
+    pub req_amount: u64,
+    pub interest: u64,
+    pub period: u64,
 }
 
-// impl NFTLoan {
-//     pub const SEED_PREFIX: &'static [u8; 11] = b"nft_loans_t";
+#[account]
+#[derive(InitSpace)] 
+pub struct LoanPDA {
+    pub bump: u8,
+    pub loans: [Option<Loan>; 15],
+    pub loan_count: u8,
 
-//     // pub fn increment(&mut self) {
-//     //     self.page_visits = self.page_visits.checked_add(1).unwrap();
-//     // }
-// }
+}
