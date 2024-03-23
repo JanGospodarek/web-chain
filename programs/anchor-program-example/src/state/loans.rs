@@ -28,4 +28,10 @@ impl LoanPDA{
         }
 
     }
+    pub fn destroy_loan(&mut self,nft_id:u32){
+        if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().nft_id == nft_id) {
+            self.loans[index] = None;
+            self.loan_count -= 1;
+        }
+    }
 }

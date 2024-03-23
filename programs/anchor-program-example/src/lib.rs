@@ -17,7 +17,10 @@ pub mod anchor_program_example {
         initialize::init(ctx)
     }
     pub fn create_nft_loan(ctx: Context<CreateLoan>,nft_id:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {
-        create::create_loan(ctx,nft_id,req_amount,interest,period)
+        create_loan::create_loan(ctx,nft_id,req_amount,interest,period)
+    }
+    pub fn destroy_loan(ctx: Context<DestroyLoan>,nft_id:u32) -> Result<()> {
+        destroy_loan::destroy_loan(ctx,nft_id)
     }
 
     // pub fn increment_page_visits(ctx: Context<IncrementPageVisits>) -> Result<()> {

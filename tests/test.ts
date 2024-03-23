@@ -30,7 +30,7 @@ describe("PDAs", () => {
     expect(loan.loanCount).to.equal(0);
   });
 
-  it("Create loan pda", async () => {
+  it("Create loan", async () => {
     await program.methods
       .createNftLoan(
         0,
@@ -48,5 +48,35 @@ describe("PDAs", () => {
     expect(loan.loans[0].reqAmount.toNumber()).to.equal(
       5.14 * AMOUNT_MULTIPLIER
     );
+  });
+  it("Create second loan", async () => {
+    await program.methods
+      .createNftLoan(
+        1,
+        new anchor.BN(6.14 * AMOUNT_MULTIPLIER),
+        new anchor.BN(16),
+        new anchor.BN(11)
+      )
+      .accounts({
+        payer: payer.publicKey,
+        loan: loanPda,
+      })
+      .rpc();
+    const loan = await fetchLoan();
+    expect(loan.loanCount).to.equal(2);
+    expect(loan.loans[1].reqAmount.toNumber()).to.equal(
+      6.14 * AMOUNT_MULTIPLIER
+    );
+  });
+  it("delete loan", async () => {
+    await program.methods
+      .destroyLoan(0)
+      .accounts({
+        payer: payer.publicKey,
+        loan: loanPda,
+      })
+      .rpc();
+    const loan = await fetchLoan();
+    expect(loan.loanCount).to.equal(1);
   });
 });
