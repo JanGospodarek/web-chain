@@ -6,7 +6,7 @@ use anchor_lang::prelude::*;
 
 pub fn create_loan(ctx: Context<CreateLoan>,nft_id:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {
     let loan = &mut ctx.accounts.loan;
-    loan.add_loan(Loan{nft_id,req_amount,interest,period});
+    loan.add_loan(Loan{nft_id,req_amount,interest,period,paid_amount:0,borrower:ctx.accounts.payer.key().clone(),lender:Pubkey::default()});
     Ok(())
 }
 

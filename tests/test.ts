@@ -18,7 +18,7 @@ describe("PDAs", () => {
 
   const fetchLoan = async () => await program.account.loanPda.fetch(loanPda);
   it("Initialize acc", async () => {
-    const tx = await program.methods
+    await program.methods
       .init()
       .accounts({
         loan: loanPda,

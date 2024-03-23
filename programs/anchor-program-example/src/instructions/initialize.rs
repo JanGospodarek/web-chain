@@ -6,7 +6,7 @@ pub fn init(ctx: Context<Initialize>) -> Result<()> {
     
     ctx.accounts.loan.bump = ctx.bumps.loan;
     ctx.accounts.loan.loan_count = 0;
-    ctx.accounts.loan.loans=[None;15];
+    ctx.accounts.loan.loans=[None;10];
   
     Ok(())
 }

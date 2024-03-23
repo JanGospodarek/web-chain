@@ -6,23 +6,25 @@ pub struct Loan {
     pub req_amount: u64,
     pub interest: u64,
     pub period: u64,
+    pub paid_amount: u64,
+    pub lender: Pubkey,
+    pub borrower: Pubkey,
 }
 
 #[account]
 #[derive(InitSpace)] 
 pub struct LoanPDA {
     pub bump: u8,
-    pub loans: [Option<Loan>; 15],
+    pub loans: [Option<Loan>; 10],
     pub loan_count: u8,
 
 }
 
 impl LoanPDA{
     pub fn add_loan(&mut self,loan:Loan){
-        let loan_count = self.loan_count;
-        if loan_count<15 {
-            self.loans[loan_count as usize]=Some(loan);
-            self.loan_count+=1;
+        if let Some(index) = self.loans.iter().position(|&x| x.is_none()) {
+            self.loans[index] = Some(loan);
+            self.loan_count += 1;
         }
 
     }
