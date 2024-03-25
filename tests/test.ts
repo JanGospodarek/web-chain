@@ -15,6 +15,10 @@ describe("PDAs", () => {
     [Buffer.from("loan_seed"), payer.publicKey.toBuffer()],
     program.programId
   );
+  const [userInfo] = PublicKey.findProgramAddressSync(
+    [Buffer.from("user_info_seed"), payer.publicKey.toBuffer()],
+    program.programId
+  );
   const loanIds = [];
   const fetchLoan = async () => await program.account.loanPda.fetch(loanPda);
   it("Initialize acc", async () => {
@@ -22,10 +26,14 @@ describe("PDAs", () => {
       .init()
       .accounts({
         loan: loanPda,
+        userInfo: userInfo,
         payer: payer.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
+
+    const info = await program.account.userInfo.fetch(userInfo);
+    expect(info.trustScore).to.equal(100);
   });
 
   it("Create loan", async () => {
