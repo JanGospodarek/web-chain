@@ -9,6 +9,7 @@ pub enum LoanState {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone,Copy,InitSpace)]
 pub struct Loan {
+    pub loan_id: u32,
     pub nft_id: u32,
     pub req_amount: u64,
     pub interest: u64,
@@ -40,8 +41,8 @@ impl LoanPDA{
         
 
     }
-    pub fn destroy_loan(&mut self,nft_id:u32){
-        if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().nft_id == nft_id) {
+    pub fn destroy_loan(&mut self,loan_id:u32){
+        if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().loan_id == loan_id) {
             if self.loans[index].unwrap().state != LoanState::Pending {
                 return;
             }

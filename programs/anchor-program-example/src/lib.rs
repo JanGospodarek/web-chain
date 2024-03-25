@@ -7,7 +7,7 @@ use instructions::*;
 pub mod instructions;
 pub mod state;
 
-declare_id!("3WAygPLbRDLygztwB87McLbsUhGgJuvey17k9QHrAwHE");
+declare_id!("4MrxHjTHXpjwmnwLPpLjFduTePpazMExe5epoM1gDeDR");
 
 #[program]
 pub mod anchor_program_example {
@@ -16,8 +16,8 @@ pub mod anchor_program_example {
     pub fn init(ctx: Context<Initialize>) -> Result<()> {
         initialize::init(ctx)
     }
-    pub fn create_nft_loan(ctx: Context<CreateLoan>,nft_id:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {
-     let res= create_loan::create_loan(ctx,nft_id,req_amount,interest,period);
+    pub fn create_nft_loan(ctx: Context<CreateLoan>,loan_id:u32,nft_id:u32,req_amount:u64,interest:u64,period:u64) -> Result<()> {
+     let res= create_loan::create_loan(ctx,loan_id,nft_id,req_amount,interest,period);
      
         match res {
             Ok(_)=>Ok(()),
@@ -25,8 +25,8 @@ pub mod anchor_program_example {
         }
 
     }
-    pub fn destroy_loan(ctx: Context<DestroyLoan>,nft_id:u32) -> Result<()> {
-        destroy_loan::destroy_loan(ctx,nft_id)
+    pub fn destroy_loan(ctx: Context<DestroyLoan>,loan_id:u32) -> Result<()> {
+        destroy_loan::destroy_loan(ctx,loan_id)
     }
 
     // pub fn increment_page_visits(ctx: Context<IncrementPageVisits>) -> Result<()> {

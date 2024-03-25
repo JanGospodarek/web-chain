@@ -1,10 +1,15 @@
 use crate::state::*;
 use anchor_lang::prelude::*;
+// use rand::prelude::*;    
 
-pub fn create_loan(ctx: Context<CreateLoan>, nft_id: u32, req_amount: u64, interest: u64, period: u64) -> Result<()> {
+pub fn create_loan(ctx: Context<CreateLoan>,loan_id:u32, nft_id: u32, req_amount: u64, interest: u64, period: u64) -> Result<()> {
     let loan = &mut ctx.accounts.loan;
 
+    // dummy id generator
+    // let mut rng = rand::thread_rng();
+    // let loan_id = rng.gen_range(0..1000) as u64;
     let status = loan.add_loan(Loan {
+        loan_id,
         nft_id,
         req_amount,
         interest,

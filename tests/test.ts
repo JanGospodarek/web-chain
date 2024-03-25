@@ -15,7 +15,7 @@ describe("PDAs", () => {
     [Buffer.from("loan_seed"), payer.publicKey.toBuffer()],
     program.programId
   );
-
+  const loanIds = [];
   const fetchLoan = async () => await program.account.loanPda.fetch(loanPda);
   it("Initialize acc", async () => {
     await program.methods
@@ -29,8 +29,11 @@ describe("PDAs", () => {
   });
 
   it("Create loan", async () => {
+    const id = Math.floor(Math.random() * 100000);
+
     const tx = await program.methods
       .createNftLoan(
+        id,
         0,
         new anchor.BN(5.14 * AMOUNT_MULTIPLIER),
         new anchor.BN(15),
@@ -41,13 +44,17 @@ describe("PDAs", () => {
         loan: loanPda,
       })
       .rpc();
+    loanIds.push(id);
+
     const loan = await fetchLoan();
     console.log("CURRENT LOANS after 1st adding", loan.loans);
     expect(loan.loans.filter((l) => l !== null).length).to.equal(1);
   });
   it("Create second loan", async () => {
+    const id = Math.floor(Math.random() * 100000);
     await program.methods
       .createNftLoan(
+        id,
         1,
         new anchor.BN(6.14 * AMOUNT_MULTIPLIER),
         new anchor.BN(16),
@@ -58,12 +65,14 @@ describe("PDAs", () => {
         loan: loanPda,
       })
       .rpc();
+    loanIds.push(id);
     const loan = await fetchLoan();
     expect(loan.loans.filter((l) => l !== null).length).to.equal(2);
   });
   it("delete loan", async () => {
+    const id = loanIds[0];
     await program.methods
-      .destroyLoan(0)
+      .destroyLoan(id)
       .accounts({
         payer: payer.publicKey,
         loan: loanPda,
@@ -73,8 +82,10 @@ describe("PDAs", () => {
     expect(loan.loans.filter((l) => l !== null).length).to.equal(1);
   });
   it("Create 3rd loan", async () => {
+    const id = Math.floor(Math.random() * 100000);
     await program.methods
       .createNftLoan(
+        id,
         2,
         new anchor.BN(6.14 * AMOUNT_MULTIPLIER),
         new anchor.BN(16),
@@ -85,6 +96,8 @@ describe("PDAs", () => {
         loan: loanPda,
       })
       .rpc();
+    loanIds.push(id);
+
     const loan = await fetchLoan();
     expect(loan.loans.filter((l) => l !== null).length).to.equal(2);
   });

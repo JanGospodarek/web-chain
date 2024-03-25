@@ -24,5 +24,6 @@ pub struct Initialize<'info> {
         bump,
     )]
     loan: Account<'info,LoanPDA>,
+    
     system_program: Program<'info, System>,
 }
