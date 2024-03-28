@@ -19,13 +19,20 @@ pub struct Loan {
     pub borrower: Pubkey,
     pub state: LoanState,
 }   
-
+#[derive(AnchorSerialize, AnchorDeserialize, Clone,Copy,InitSpace)]
+pub struct HistoryLoan {
+    pub loan_id: u32,
+    pub nft_id: u32,
+    pub lender: Pubkey,
+    pub borrower: Pubkey,
+}   
 #[account]
 #[derive(InitSpace)] 
 pub struct LoanPDA {
     pub bump: u8,
     pub loans: [Option<Loan>; 10],
-    pub loan_count: u8,
+    pub history_loans: [Option<HistoryLoan>; 10],
+    pub loan_count: u8
 
 }
 
@@ -53,6 +60,28 @@ impl LoanPDA{
                 loan.lender = lender;
                 loan.state = LoanState::Acitve;
                 self.loans[index] = Some(loan);
+            }
+        }
+    }
+    pub fn repay(&mut self,loan_id:u32,amount:u64){
+        if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().loan_id == loan_id) {
+            if let Some(mut loan) = self.loans[index].take() {
+                loan.paid_amount += amount;
+                if loan.paid_amount >= loan.req_amount {
+                    if let Some(i) = self.loans.iter().position(|&x| x.is_none()){
+                        self.history_loans[i] = Some(HistoryLoan{
+                            loan_id:loan.loan_id,
+                            nft_id:loan.nft_id,
+                            lender:loan.lender,
+                            borrower:loan.borrower,
+                        });
+                        self.loans[index] = None;
+                    }
+                }else{
+                    self.loans[index] = Some(loan);
+
+                }
+               
             }
         }
     }

@@ -31,5 +31,8 @@ pub mod anchor_program_example {
     pub fn accept_offer(ctx: Context<AcceptOffer>,loan_id:u32) -> Result<()> {
         accept_offer::accept_offer(ctx,loan_id)
     }
+    pub fn repay_loan(ctx: Context<RepayLoan>,loan_id:u32,amount:u64) -> Result<()> {
+        repay_loan::repay_loan(ctx,loan_id,amount)
+    }
   
 }
