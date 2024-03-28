@@ -28,8 +28,8 @@ pub mod anchor_program_example {
     pub fn destroy_loan(ctx: Context<DestroyLoan>,loan_id:u32) -> Result<()> {
         destroy_loan::destroy_loan(ctx,loan_id)
     }
-
-    // pub fn increment_page_visits(ctx: Context<IncrementPageVisits>) -> Result<()> {
-    //     increment::increment_page_visits(ctx)
-    // }
+    pub fn accept_offer(ctx: Context<AcceptOffer>,loan_id:u32) -> Result<()> {
+        accept_offer::accept_offer(ctx,loan_id)
+    }
+  
 }

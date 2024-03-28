@@ -37,9 +37,6 @@ impl LoanPDA{
         }else{
             return "no-space"
         }
-
-        
-
     }
     pub fn destroy_loan(&mut self,loan_id:u32){
         if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().loan_id == loan_id) {
@@ -47,6 +44,16 @@ impl LoanPDA{
                 return;
             }
             self.loans[index] = None;
+        }
+    }
+
+    pub fn set_lender(&mut self,loan_id:u32,lender:Pubkey){
+        if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().loan_id == loan_id) {
+            if let Some(mut loan) = self.loans[index].take() {
+                loan.lender = lender;
+                loan.state = LoanState::Acitve;
+                self.loans[index] = Some(loan);
+            }
         }
     }
 }

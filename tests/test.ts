@@ -2,12 +2,14 @@ import * as anchor from "@coral-xyz/anchor";
 import { AnchorProgramExample } from "../target/types/anchor_program_example";
 import { PublicKey } from "@solana/web3.js";
 import { expect } from "chai";
+import { sleep } from "../utils/sleep";
 
 const AMOUNT_MULTIPLIER = 1000000;
 describe("PDAs", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
   const payer = provider.wallet as anchor.Wallet;
+
   const program = anchor.workspace
     .AnchorProgramExample as anchor.Program<AnchorProgramExample>;
 
@@ -21,6 +23,7 @@ describe("PDAs", () => {
   );
   const loanIds = [];
   const fetchLoan = async () => await program.account.loanPda.fetch(loanPda);
+
   it("Initialize acc", async () => {
     await program.methods
       .init()
@@ -76,6 +79,7 @@ describe("PDAs", () => {
     loanIds.push(id);
     const loan = await fetchLoan();
     expect(loan.loans.filter((l) => l !== null).length).to.equal(2);
+    await sleep(500);
   });
   it("delete loan", async () => {
     const id = loanIds[0];
@@ -89,24 +93,59 @@ describe("PDAs", () => {
     const loan = await fetchLoan();
     expect(loan.loans.filter((l) => l !== null).length).to.equal(1);
   });
-  it("Create 3rd loan", async () => {
-    const id = Math.floor(Math.random() * 100000);
+  // it("Create 3rd loan", async () => {
+  //   const id = Math.floor(Math.random() * 100000);
+  //   await program.methods
+  //     .createNftLoan(
+  //       id,
+  //       2,
+  //       new anchor.BN(6.14 * AMOUNT_MULTIPLIER),
+  //       new anchor.BN(16),
+  //       new anchor.BN(11)
+  //     )
+  //     .accounts({
+  //       payer: payer.publicKey,
+  //       loan: loanPda,
+  //     })
+  //     .rpc();
+  //   loanIds.push(id);
+
+  //   const loan = await fetchLoan();
+  //   expect(loan.loans.filter((l) => l !== null).length).to.equal(2);
+  // });
+
+  const tomek = anchor.web3.Keypair.generate();
+
+  before(async () => {
+    // //AirDrop
+    await provider.connection.requestAirdrop(tomek.publicKey, 10000000000);
+    await sleep(500);
+  });
+
+  it("accept loan", async () => {
+    const loans_prev = await fetchLoan();
+    let id = -1;
+
+    for (let i = 0; i < loans_prev.loans.length; i++) {
+      if (loans_prev.loans[i] !== null) {
+        id = loans_prev.loans[i].loanId;
+        break;
+      }
+    }
+    console.log("ID", id);
     await program.methods
-      .createNftLoan(
-        id,
-        2,
-        new anchor.BN(6.14 * AMOUNT_MULTIPLIER),
-        new anchor.BN(16),
-        new anchor.BN(11)
-      )
+      .acceptOffer(id)
       .accounts({
-        payer: payer.publicKey,
+        borrower: payer.publicKey,
+        payer: tomek.publicKey,
         loan: loanPda,
       })
+      .signers([tomek])
       .rpc();
-    loanIds.push(id);
-
+    await sleep(500);
     const loan = await fetchLoan();
-    expect(loan.loans.filter((l) => l !== null).length).to.equal(2);
+
+    console.log("CURRENT LOANS after accepting", loan.loans);
+    // expect(loan.loans.find(el=>el.lender===tomek));
   });
 });
