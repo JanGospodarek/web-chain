@@ -33,7 +33,9 @@ describe("PDAs", () => {
         payer: payer.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
-      .rpc();
+      .rpc({
+        skipPreflight: true,
+      });
 
     const info = await program.account.userInfo.fetch(userInfo);
     expect(info.trustScore).to.equal(100);
@@ -122,7 +124,7 @@ describe("PDAs", () => {
     await sleep(500);
   });
 
-  it("accept loan", async () => {
+  it("accept loan and repay", async () => {
     const loans_prev = await fetchLoan();
     let id = -1;
 
@@ -132,7 +134,7 @@ describe("PDAs", () => {
         break;
       }
     }
-    console.log("ID", id);
+
     await program.methods
       .acceptOffer(id)
       .accounts({
@@ -145,7 +147,17 @@ describe("PDAs", () => {
     await sleep(500);
     const loan = await fetchLoan();
 
-    console.log("CURRENT LOANS after accepting", loan.loans);
-    // expect(loan.loans.find(el=>el.lender===tomek));
+    await program.methods
+      .repayLoan(id, new anchor.BN(3 * AMOUNT_MULTIPLIER))
+      .accounts({
+        payer: payer.publicKey,
+        loan: loanPda,
+      })
+      .rpc();
+    await sleep(500);
+    const fetched = await fetchLoan();
+    const loans = fetched.loans.filter((l) => l !== null);
+
+    console.log("CURRENT LOANS after repaying", loans);
   });
 });
