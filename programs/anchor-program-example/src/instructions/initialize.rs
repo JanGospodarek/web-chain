@@ -5,12 +5,14 @@ use crate::state::UserInfo;
 
 
 pub fn init(ctx: Context<Initialize>) -> Result<()> {
-    
-    ctx.accounts.loan.bump = ctx.bumps.loan;
+    let loan= &mut ctx.accounts.loan;
 
+    loan.bump = ctx.bumps.loan;
+    loan.loan_count = 0;
+    loan.loans=[None;10];
+    loan.space = LoanPDA::INIT_SPACE as u32;
     ctx.accounts.user_info.trust_score = 100;
-    ctx.accounts.loan.loan_count = 0;
-    ctx.accounts.loan.loans=[None;10];
+
     Ok(())
 }
 

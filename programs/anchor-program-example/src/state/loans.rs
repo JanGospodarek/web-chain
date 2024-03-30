@@ -25,6 +25,7 @@ pub struct Loan {
 pub struct LoanPDA {
     pub bump: u8,
     pub loans: [Option<Loan>; 10],
+    pub space:u32,
     pub loan_count: u8
 
 }
@@ -56,17 +57,22 @@ impl LoanPDA{
             }
         }
     }
-    pub fn repay(&mut self,loan_id:u32,amount:u64){
+    pub fn repay(&mut self,loan_id:u32,amount:u64)->u64{
         if let Some(index) = self.loans.iter().position(|&x| x.is_some() && x.unwrap().loan_id == loan_id) {
             if let Some(mut loan) = self.loans[index].take() {
                 loan.paid_amount += amount;
 
                 if loan.paid_amount >= loan.req_amount {
                     loan.state = LoanState::Closed;
+
                 }
 
                 self.loans[index] = Some(loan);           
             }
+            return self.loans[index].unwrap().req_amount;
+        }else{
+            return 0;
         }
+        
     }
 }

@@ -19,7 +19,7 @@ pub fn create_loan(ctx: Context<CreateLoan>,loan_id:u32, nft_id: u32, req_amount
         lender: Pubkey::default(),
         state: LoanState::Pending,
     });
-
+    
     if status == "no-space" {
         Err(ErrorCode::DataTooLarge.into()) 
     } else {
