@@ -17,8 +17,8 @@ pub struct AcceptOffer<'info> {
     #[account(mut)]
     ///CHECK: wow
     borrower: AccountInfo<'info>,
-    #[account(mut,seeds = [b"loan_seed",borrower.key().as_ref()],bump)]
-    loan: Account<'info,LoanPDA>,
+    #[account(mut,seeds = [b"prefix_loan_seed",borrower.key().as_ref()],bump)]
+    loan: Account<'info,LoanPda>,
     system_program: Program<'info, System>,
 }
 

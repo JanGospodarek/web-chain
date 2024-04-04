@@ -2,7 +2,7 @@ use crate::state::*;
 use anchor_lang::prelude::*;
 // use rand::prelude::*;    
 
-pub fn create_loan(ctx: Context<CreateLoan>,loan_id:u32, nft_id: u32, req_amount: u64, interest: u64, period: u64) -> Result<()> {
+pub fn create_loan(ctx: Context<CreateLoan>,loan_id:u32, nft_id: u32, req_amount: u64, interest: u64, period: i64) -> Result<()> {
     let loan = &mut ctx.accounts.loan;
 
     // dummy id generator
@@ -33,8 +33,8 @@ pub struct CreateLoan<'info> {
    #[account(mut)]
     payer: Signer<'info>,
 
-    #[account(mut,seeds = [b"loan_seed",payer.key().as_ref()],bump)]
-    loan: Account<'info,LoanPDA>,
+    #[account(mut,seeds = [b"prefix_loan_seed",payer.key().as_ref()],bump)]
+    loan: Account<'info,LoanPda>,
     system_program: Program<'info, System>,
 }
 

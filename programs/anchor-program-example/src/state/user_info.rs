@@ -4,6 +4,7 @@ use anchor_lang::prelude::*;
 #[derive(InitSpace)] 
 pub struct UserInfo{
     pub trust_score:u32,
+    pub owner:Pubkey,
 }
 
 impl UserInfo  {

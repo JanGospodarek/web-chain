@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::LoanPDA;
+use crate::state::LoanPda;
 use crate::state::UserInfo;
 
 
@@ -10,9 +10,9 @@ pub fn init(ctx: Context<Initialize>) -> Result<()> {
     loan.bump = ctx.bumps.loan;
     loan.loan_count = 0;
     loan.loans=[None;10];
-    loan.space = LoanPDA::INIT_SPACE as u32;
+    loan.space = LoanPda::INIT_SPACE as u32;
     ctx.accounts.user_info.trust_score = 100;
-
+    ctx.accounts.user_info.owner = *ctx.accounts.payer.key;
     Ok(())
 }
 
@@ -23,12 +23,12 @@ pub struct Initialize<'info> {
 
     #[account(
         init,
-        space = 8 +LoanPDA::INIT_SPACE,
+        space = 8 +LoanPda::INIT_SPACE,
         payer = payer,
-        seeds = [b"loan_seed",payer.key().as_ref()],
+        seeds = [b"prefix_loan_seed",payer.key().as_ref()],
         bump,
     )]
-    loan: Account<'info,LoanPDA>,
+    loan: Account<'info,LoanPda>,
 
     #[account(
         init,    

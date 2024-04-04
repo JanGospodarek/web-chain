@@ -13,7 +13,7 @@ pub struct Loan {
     pub nft_id: u32,
     pub req_amount: u64,
     pub interest: u64,
-    pub period: u64,
+    pub period: i64,
     pub paid_amount: u64,
     pub lender: Pubkey,
     pub borrower: Pubkey,
@@ -22,7 +22,7 @@ pub struct Loan {
 
 #[account]
 #[derive(InitSpace)] 
-pub struct LoanPDA {
+pub struct LoanPda {
     pub bump: u8,
     pub loans: [Option<Loan>; 10],
     pub space:u32,
@@ -30,7 +30,7 @@ pub struct LoanPDA {
 
 }
 
-impl LoanPDA{
+impl LoanPda{
     pub fn add_loan(&mut self,loan:Loan)->&str{
         if let Some(index) = self.loans.iter().position(|&x| x.is_none()) {
             self.loans[index] = Some(loan);

@@ -8,17 +8,17 @@ const AMOUNT_MULTIPLIER = 1000000;
 describe("PDAs", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
-  const payer = provider.wallet as anchor.Wallet;
+  const payer = anchor.web3.Keypair.generate();
 
   const program = anchor.workspace
     .AnchorProgramExample as anchor.Program<AnchorProgramExample>;
 
   const [loanPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("loan_seed"), payer.publicKey.toBuffer()],
+    [Buffer.from("prefix_loan_seed"), payer.publicKey.toBuffer()],
     program.programId
   );
   const [userInfo] = PublicKey.findProgramAddressSync(
-    [Buffer.from("user_info_seed"), payer.publicKey.toBuffer()],
+    [Buffer.from("prefix_user_info_seed"), payer.publicKey.toBuffer()],
     program.programId
   );
   const tomek = anchor.web3.Keypair.generate();
@@ -26,21 +26,21 @@ describe("PDAs", () => {
   before(async () => {
     // //AirDrop
     await provider.connection.requestAirdrop(tomek.publicKey, 10000000000);
+    await provider.connection.requestAirdrop(payer.publicKey, 10000000000);
     await sleep(500);
   });
 
   const [tomeksLoanPda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("loan_seed"), tomek.publicKey.toBuffer()],
+    [Buffer.from("prefix_loan_seed"), tomek.publicKey.toBuffer()],
     program.programId
   );
   const [tomeksUserInfo] = PublicKey.findProgramAddressSync(
-    [Buffer.from("user_info_seed"), tomek.publicKey.toBuffer()],
+    [Buffer.from("prefix_user_info_seed"), tomek.publicKey.toBuffer()],
     program.programId
   );
 
   const loanIds = [];
   const fetchLoan = async () => await program.account.loanPda.fetch(loanPda);
-
   it("Initialize acc", async () => {
     await program.methods
       .init()
@@ -48,15 +48,16 @@ describe("PDAs", () => {
         loan: loanPda,
         userInfo: userInfo,
         payer: payer.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
       })
+      .signers([payer])
       .rpc({
         skipPreflight: true,
       });
 
     const info = await program.account.userInfo.fetch(userInfo);
     const pda = await fetchLoan();
-    console.log("SPACE", pda.space);
+    console.log("SPACE", pda);
+    console.log("USER INFO", info);
     expect(info.trustScore).to.equal(100);
   });
 
@@ -69,12 +70,14 @@ describe("PDAs", () => {
         0,
         new anchor.BN(5.14 * AMOUNT_MULTIPLIER),
         new anchor.BN(15),
-        new anchor.BN(10)
+        new anchor.BN(Date.now())
       )
       .accounts({
         payer: payer.publicKey,
         loan: loanPda,
       })
+      .signers([payer])
+
       .rpc();
     loanIds.push(id);
 
@@ -96,6 +99,8 @@ describe("PDAs", () => {
         payer: payer.publicKey,
         loan: loanPda,
       })
+      .signers([payer])
+
       .rpc();
     loanIds.push(id);
     const loan = await fetchLoan();
@@ -110,6 +115,8 @@ describe("PDAs", () => {
         payer: payer.publicKey,
         loan: loanPda,
       })
+      .signers([payer])
+
       .rpc();
     const loan = await fetchLoan();
     expect(loan.loans.filter((l) => l !== null).length).to.equal(1);

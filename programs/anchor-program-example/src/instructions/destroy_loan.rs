@@ -1,4 +1,4 @@
-use crate::state::LoanPDA;
+use crate::state::LoanPda;
 use anchor_lang::prelude::*;
 
 
@@ -15,7 +15,7 @@ pub struct DestroyLoan<'info> {
    #[account(mut)]
     payer: Signer<'info>,
 
-    #[account(mut,seeds = [b"loan_seed",payer.key().as_ref()],bump)]
-    loan: Account<'info,LoanPDA>,
+    #[account(mut,seeds = [b"prefix_loan_seed",payer.key().as_ref()],bump)]
+    loan: Account<'info,LoanPda>,
     system_program: Program<'info, System>,
 }
