@@ -12,4 +12,5 @@ impl UserInfo  {
     let increase = ((loan_amount as f64 / 1000000.0) * 10.0).ceil() as u32;
         self.trust_score += increase;
     }
+  
 }
