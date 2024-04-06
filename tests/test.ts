@@ -18,7 +18,7 @@ describe("PDAs", () => {
     program.programId
   );
   const [userInfo] = PublicKey.findProgramAddressSync(
-    [Buffer.from("prefix_user_info_seed"), payer.publicKey.toBuffer()],
+    [Buffer.from("user_info_seed"), payer.publicKey.toBuffer()],
     program.programId
   );
   const tomek = anchor.web3.Keypair.generate();
@@ -35,7 +35,7 @@ describe("PDAs", () => {
     program.programId
   );
   const [tomeksUserInfo] = PublicKey.findProgramAddressSync(
-    [Buffer.from("prefix_user_info_seed"), tomek.publicKey.toBuffer()],
+    [Buffer.from("user_info_seed"), tomek.publicKey.toBuffer()],
     program.programId
   );
 
@@ -165,11 +165,9 @@ describe("PDAs", () => {
     await program.methods
       .repayLoan(id, new anchor.BN(3 * AMOUNT_MULTIPLIER))
       .accounts({
-        borrower: payer.publicKey,
         payer: tomek.publicKey,
         loan: loanPda,
         borrowerUserInfo: userInfo,
-        lenderUserInfo: tomeksUserInfo,
       })
       .signers([tomek])
       .rpc();
@@ -187,13 +185,11 @@ describe("PDAs", () => {
     }
     // Repay loan
     await program.methods
-      .repayLoan(id, new anchor.BN(3 * AMOUNT_MULTIPLIER))
+      .repayLoan(id, new anchor.BN(2 * AMOUNT_MULTIPLIER))
       .accounts({
-        borrower: payer.publicKey,
         payer: tomek.publicKey,
         loan: loanPda,
         borrowerUserInfo: userInfo,
-        lenderUserInfo: tomeksUserInfo,
       })
       .signers([tomek])
       .rpc();
